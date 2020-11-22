@@ -95,7 +95,7 @@ VERSION_GLIB=2.67.4
 VERSION_EXPAT=2.2.10
 VERSION_EXIF=0.6.22
 VERSION_LCMS2=2.11
-VERSION_JPEG=2.0.6
+VERSION_JPEG=eb14189
 VERSION_PNG16=1.6.37
 VERSION_SPNG=0.6.2
 VERSION_WEBP=1.2.0
@@ -120,6 +120,7 @@ if [ "$RUNNING_IN_CONTAINER" = true ]; then
   patch -p1 <$SOURCE_DIR/build/patches/emscripten-auto-deletelater.patch
   patch -p1 <$SOURCE_DIR/build/patches/emscripten-vector-as-js-array.patch
   patch -p1 <$SOURCE_DIR/build/patches/emscripten-allow-block-main-thread.patch
+  patch -p1 <$SOURCE_DIR/build/patches/emscripten-update-arm-neon.patch
 
   # https://github.com/emscripten-core/emscripten/pull/10524
   patch -p1 <$SOURCE_DIR/build/patches/emscripten-10524.patch
@@ -233,11 +234,14 @@ echo "Compiling jpeg"
 echo "============================================="
 test -f "$TARGET/lib/pkgconfig/libjpeg.pc" || (
   mkdir $DEPS/jpeg
-  curl -Ls https://github.com/libjpeg-turbo/libjpeg-turbo/archive/$VERSION_JPEG.tar.gz | tar xzC $DEPS/jpeg --strip-components=1
+  #curl -Ls https://github.com/libjpeg-turbo/libjpeg-turbo/archive/$VERSION_JPEG.tar.gz | tar xzC $DEPS/jpeg --strip-components=1
+  curl -Ls https://github.com/libjpeg-turbo/libjpeg-turbo/tarball/$VERSION_JPEG | tar xzC $DEPS/jpeg --strip-components=1
   cd $DEPS/jpeg
-  # https://github.com/libjpeg-turbo/libjpeg-turbo/issues/250#issuecomment-407615180
+  # TODO(kleisauke): Discuss this patch upstream
+  patch -p1 <$SOURCE_DIR/build/patches/libjpeg-turbo-emscripten.patch
   emcmake cmake -B_build -H. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TARGET -DENABLE_STATIC=TRUE \
-    -DENABLE_SHARED=FALSE -DWITH_JPEG8=TRUE -DWITH_SIMD=FALSE -DWITH_TURBOJPEG=FALSE
+    -DENABLE_SHARED=FALSE -DWITH_JPEG8=TRUE -DWITH_TURBOJPEG=FALSE \
+    ${DISABLE_SIMD:+-DWITH_SIMD=FALSE} ${ENABLE_SIMD:+-DWITH_SIMD=TRUE}
   emmake make -C _build install
 )
 
