@@ -130,6 +130,9 @@ if [ "$RUNNING_IN_CONTAINER" = true ]; then
   # https://github.com/emscripten-core/emscripten/pull/12963
   patch -p1 <$SOURCE_DIR/build/patches/emscripten-12963.patch
 
+  # https://github.com/emscripten-core/emscripten/pull/13454
+  patch -p1 <$SOURCE_DIR/build/patches/emscripten-13454.patch
+
   # Need to rebuild libembind, libc, libdlmalloc and libemmalloc,
   # since we modified it with the patches above
   embuilder.py build libembind libc-mt libdlmalloc-mt{,-debug} libemmalloc-mt{,-debug} --force $LTO_FLAG
@@ -267,7 +270,7 @@ test -f "$TARGET/lib/pkgconfig/spng.pc" || (
   # TODO(kleisauke): Discuss this patch upstream
   patch -p1 <$SOURCE_DIR/build/patches/libspng-emscripten.patch
   meson setup _build --prefix=$TARGET --cross-file=$MESON_CROSS --default-library=static --buildtype=release \
-    -Dstatic_zlib=true ${DISABLE_SIMD:+-Denable_opt=false} ${ENABLE_SIMD:+-Dc_args="$CFLAGS -msse2"}
+    -Dstatic_zlib=true ${DISABLE_SIMD:+-Denable_opt=false} ${ENABLE_SIMD:+-Dc_args="$CFLAGS -msse4.1 -DSPNG_SSE=4"}
   emmake ninja -C _build install
 )
 
@@ -311,6 +314,7 @@ test -f "$TARGET/lib/pkgconfig/vips.pc" || (
   # Emscripten specific patches
   patch -p1 <$SOURCE_DIR/build/patches/vips-remove-orc.patch
   # TODO(kleisauke): Discuss these patches upstream
+  patch -p1 <$SOURCE_DIR/build/patches/vips-simd.patch
   patch -p1 <$SOURCE_DIR/build/patches/vips-speed-up-getpoint.patch
   patch -p1 <$SOURCE_DIR/build/patches/vips-blob-copy-malloc.patch
   # https://github.com/libvips/libvips/pull/1949
@@ -325,7 +329,8 @@ test -f "$TARGET/lib/pkgconfig/vips.pc" || (
     --disable-debug --disable-introspection --disable-deprecated --with-radiance --with-analyze --with-ppm --with-libexif \
     --with-lcms --with-jpeg --with-png --with-libwebp --with-tiff --without-giflib --without-rsvg --without-gsf --without-zlib \
     --without-fftw --without-magick --without-OpenEXR --without-nifti --without-heif --without-pdfium --without-poppler \
-    --without-openslide --without-matio --without-cfitsio --without-pangoft2 --without-imagequant
+    --without-openslide --without-matio --without-cfitsio --without-pangoft2 --without-imagequant \
+    ${ENABLE_SIMD:+CPPFLAGS="-msse4.2"}
   emmake make -C 'libvips' install
   emmake make install-pkgconfigDATA
 )

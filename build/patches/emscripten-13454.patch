@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kleis Auke Wolthuizen <github@kleisauke.nl>
+Date: Tue, 9 Feb 2021 11:56:01 +0100
+Subject: [PATCH 1/1] Avoid scalarization in _mm_madd_epi16
+
+Upstream-Status: Accepted [https://github.com/emscripten-core/emscripten/commit/050b60b6e9c50b55768ae5356f12a0eed859fc9f]
+
+diff --git a/system/include/compat/emmintrin.h b/system/include/compat/emmintrin.h
+index 1111111..2222222 100644
+--- a/system/include/compat/emmintrin.h
++++ b/system/include/compat/emmintrin.h
+@@ -669,20 +669,7 @@ _mm_avg_epu16(__m128i __a, __m128i __b)
+ static __inline__ __m128i __attribute__((__always_inline__, __nodebug__))
+ _mm_madd_epi16(__m128i __a, __m128i __b)
+ {
+-  // TODO: optimize
+-  union {
+-    signed short x[8];
+-    __m128i m;
+-  } src, src2;
+-  union {
+-    signed int x[4];
+-    __m128i m;
+-  } dst;
+-  src.m = __a;
+-  src2.m = __b;
+-  for(int i = 0; i < 4; ++i)
+-    dst.x[i] = src.x[i*2] * src2.x[i*2] + src.x[i*2+1] * src2.x[i*2+1];
+-  return dst.m;
++  return (__m128i)__builtin_wasm_dot_s_i32x4_i16x8((__i16x8)__a, (__i16x8)__b);
+ }
+ 
+ static __inline__ __m128i __attribute__((__always_inline__, __nodebug__))

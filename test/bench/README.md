@@ -9,7 +9,7 @@ https://sharp.pixelplumbing.com/performance
 
 * Intel Core i5-8600K CPU 3.60GHz (Coffee Lake), 1 CPU, 6 logical and 6 physical cores
 * Fedora 33
-* Node v15.7.0
+* Node v15.10.0
 
 ## Test images
 
@@ -34,7 +34,7 @@ images. For PNG images a zlib compression level of 6 is used.
 | :----------------- | :----- | :----- | :----- | ------: | -------: |
 | jimp               | JPEG   | buffer | buffer |    0.91 |      1.0 |
 | mapnik             | JPEG   | buffer | buffer |    4.08 |      4.5 |
-| wasm-vips          | JPEG   | buffer | buffer |    6.23 |      6.8 |
+| wasm-vips          | JPEG   | buffer | buffer |    9.14 |     10.0 |
 | imagemagick        | JPEG   | file   | file   |   12.68 |     13.9 |
 | gm                 | JPEG   | file   | file   |   13.00 |     14.3 |
 | sharp (w/o liborc) | JPEG   | stream | stream |   38.84 |     42.7 |
@@ -45,7 +45,7 @@ images. For PNG images a zlib compression level of 6 is used.
 | sharp              | JPEG   | buffer | buffer |   44.33 |     48.7 |
 |                    |        |        |        |         |          |
 | jimp               | PNG    | buffer | buffer |    3.87 |      1.0 |
-| wasm-vips          | PNG    | buffer | buffer |    5.42 |      1.4 |
+| wasm-vips          | PNG    | buffer | buffer |    5.94 |      1.5 |
 | mapnik             | PNG    | buffer | buffer |    6.56 |      1.7 |
 | gm                 | PNG    | file   | file   |    8.46 |      2.2 |
 | imagemagick        | PNG    | file   | file   |    8.55 |      2.2 |
@@ -54,11 +54,11 @@ images. For PNG images a zlib compression level of 6 is used.
 | sharp              | PNG    | file   | file   |   17.74 |      4.6 |
 | sharp              | PNG    | buffer | buffer |   17.81 |      4.6 |
 |                    |        |        |        |         |          |
-| wasm-vips          | WebP   | buffer | buffer |    7.84 |      1.0 |
-| sharp (w/o liborc) | WebP   | file   | file   |   14.46 |      1.8 |
-| sharp              | WebP   | file   | file   |   14.54 |      1.9 |
-| sharp (w/o liborc) | WebP   | buffer | buffer |   14.57 |      1.9 |
-| sharp              | WebP   | buffer | buffer |   14.58 |      1.9 |
+| wasm-vips          | WebP   | buffer | buffer |    9.20 |      1.0 |
+| sharp (w/o liborc) | WebP   | file   | file   |   14.46 |      1.6 |
+| sharp              | WebP   | file   | file   |   14.54 |      1.6 |
+| sharp (w/o liborc) | WebP   | buffer | buffer |   14.57 |      1.6 |
+| sharp              | WebP   | buffer | buffer |   14.58 |      1.6 |
 
 ## Running the wasm-vips benchmark
 
