@@ -1,5 +1,0 @@
-FROM: emscripten/emsdk
-
-COPY entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
