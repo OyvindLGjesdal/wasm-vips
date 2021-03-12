@@ -6,19 +6,5 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
-    - name: check python version
-      run: python --version
-    - name: clone emsdk
-      run:  git clone https://github.com/emscripten-core/emsdk.git
-    - name: list working directory
-      run: ls && ./emsdk install latest
-      working-directory: emsdk
-    - name: install, activate and source
-      run: ./emsdk install latest && ./emsdk activate latest && source ./emsdk_env.sh 
-      working-directory: emsdk
-    - name: "verify emscripten"
-      image: "emscripten/emsdk"
-
-      run: "ls && emcc -v"
-      working-directory: emsdk
+    - name: test
+      uses: oyvindlgjesdal/wasm-vips/emsdk-docker-action
