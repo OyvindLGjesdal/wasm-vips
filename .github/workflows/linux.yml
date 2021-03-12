@@ -16,5 +16,5 @@ jobs:
       working-directory: $GITHUB_WORKSPACE/emsdk
     - name: install, activate and source
       run: ./emsdk install latest && ./emsdk activate latest && source ./emsdk_env.sh 
-      working_directory: $GITHUB_WORKSPACE/emdsk
+      working-directory: $GITHUB_WORKSPACE/emdsk
  
