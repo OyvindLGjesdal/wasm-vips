@@ -13,8 +13,8 @@ jobs:
       run:  git clone https://github.com/emscripten-core/emsdk.git
     - name: list working directory
       run: ls && ./emsdk install latest
-      working_dir: $GITHUB_WORKSPACE/emsdk
+      working-directory: $GITHUB_WORKSPACE/emsdk
     - name: install, activate and source
       run: ./emsdk install latest && ./emsdk activate latest && source ./emsdk_env.sh 
-      working_dir: $GITHUB_WORKSPACE/emdsk
+      working_directory: $GITHUB_WORKSPACE/emdsk
  
