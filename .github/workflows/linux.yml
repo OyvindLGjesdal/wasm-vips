@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        command [build:node, build:web]
+        command: [build:node, build:web]
     steps:
     - name: Checkout
       uses: actions/checkout@v2
