@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: install python3
-      run: apt-get -y install python3 cmake
+    - name: check python version
+      run: python --version
     - name: clone emsdk
       run:  git clone https://github.com/emscripten-core/emsdk.git
     - name: list working directory
