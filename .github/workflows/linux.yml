@@ -16,7 +16,7 @@ jobs:
       working-directory: emsdk
     - name: install, activate and source
       run: ./emsdk install latest && ./emsdk activate latest && source ./emsdk_env.sh 
-      working-directory: emdsk
+      working-directory: emsdk
     - name: "verify emscripten"
       run: "./emcc -v"
-      working-directory: emdsk
+      working-directory: emsdk
