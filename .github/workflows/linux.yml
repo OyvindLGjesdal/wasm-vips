@@ -1,14 +1,19 @@
-name: Emscripten CI
+name: Emscripten CI for wasm-vips
 
 on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        command [build:node, build:web]
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: test
-      run: npm run build:web && npm run build:node
+    - name: compile wasm-wips for node and web
+      run: npm run ${{ matrix.command }}
 
+    - name: inspect directory to view artifacts etc
+      run: ls -alh
