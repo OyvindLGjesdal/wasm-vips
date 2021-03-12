@@ -8,3 +8,4 @@ jobs:
 
     - name: test
       uses: oyvindlgjesdal/wasm-vips/emsdk-docker-action@master
+      run: echo 'test'
