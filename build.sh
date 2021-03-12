@@ -68,7 +68,7 @@ fi
 #export EMMAKEN_CFLAGS="-s INITIAL_MEMORY=64MB --source-map-base http://localhost:5000/lib/"
 
 # Common compiler flags
-export CFLAGS="-O3 -fno-rtti -fno-exceptions -mnontrapping-fptoint"
+export CFLAGS="-Os -fno-rtti -fno-exceptions -mnontrapping-fptoint --closure 1"
 if [ "$SIMD" = "true" ]; then export CFLAGS+=" -msimd128"; fi
 if [ "$EXPERIMENTAL_SIMD" = "true" ]; then export CFLAGS+=" -munimplemented-simd128"; fi
 if [ -n "$LTO_FLAG" ]; then export CFLAGS+=" -flto"; fi
