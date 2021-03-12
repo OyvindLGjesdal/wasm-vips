@@ -7,13 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        command: [build:node, build:web]
+        command: ['npm run build:node', 'npm run build:web']
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
     - name: compile wasm-wips for node and web
-      run: npm run "${{ matrix.command }}"
+      run: ${{ matrix.command }}
 
     - name: inspect directory to view artifacts etc
       run: ls -ahl
