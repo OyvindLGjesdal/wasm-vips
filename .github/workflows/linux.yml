@@ -16,4 +16,4 @@ jobs:
       run: npm run ${{ matrix.command }}
 
     - name: inspect directory to view artifacts etc
-      run: ls -alh
+      run: ls -ahl
