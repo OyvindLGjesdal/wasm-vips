@@ -10,5 +10,5 @@ jobs:
       uses: actions/checkout@v2
 
     - name: test
-      run: npm run build-web && ls
+      run: npm run build:web && npm run build:node
 
