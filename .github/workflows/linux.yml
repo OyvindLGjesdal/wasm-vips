@@ -9,6 +9,10 @@ jobs:
     steps:
     - name: clone emsdk
       run:  git clone https://github.com/emscripten-core/emsdk.git
-    - name: 
+    - name: list working directory
       run: ls && ./emsdk install latest
-      working_dir: $GITHUB_WORKSPACE
+      working_directory: $GITHUB_WORKSPACE/emsdk
+    - name: install, activate and source
+      run: ./emsdk install latest && ./emsdk activate latest && source ./emsdk_env.sh 
+      working_directory: $GITHUB_WORKSPACE/emdsk
+ 
