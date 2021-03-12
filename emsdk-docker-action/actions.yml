@@ -1,7 +1,0 @@
-name: 'Build wasm-vips'
-description: 'Build wasm-wisp html and node'
-inputs:
-outputs:
-runs:
-  using: 'docker'
-  image: '../Dockerfile'
