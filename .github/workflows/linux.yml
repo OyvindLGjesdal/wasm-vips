@@ -19,3 +19,9 @@ jobs:
 
     - name: inspect directory to view artifacts etc
       run: ls -ahl
+
+    - name: "run test"
+      run: npm test
+
+    - npm "run benchmark"
+      run: npm run bench
