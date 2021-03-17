@@ -23,5 +23,5 @@ jobs:
     - name: "run test"
       run: npm test
 
-    - npm: "run benchmark"
+    - name: "run benchmark"
       run: npm run bench
