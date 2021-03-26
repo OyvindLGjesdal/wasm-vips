@@ -20,8 +20,10 @@ jobs:
     - name: inspect directory to view artifacts etc
       run: ls -ahl
     
-    - nmp install
-    - name: "run test"
+    - name: install dependencies for running tests
+      run: npm install
+
+    - name: run test
       run: npm test:$COMMAND
 
     - name: "run benchmark"
