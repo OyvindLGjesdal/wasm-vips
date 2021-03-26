@@ -21,7 +21,7 @@ jobs:
       run: ls -ahl
 
     - name: "run test"
-      run: npm test
+      run: npm test:$COMMAND
 
     - name: "run benchmark"
       run: npm run bench
