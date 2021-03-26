@@ -24,7 +24,7 @@ jobs:
       run: npm install
 
     - name: run test
-      run: npm test:$COMMAND
+      run: npm run test:$COMMAND
 
     - name: "run benchmark"
       run: npm run bench
