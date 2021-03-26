@@ -12,6 +12,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: "install dependencies"
+      run: "npm install --production false"
+
     - name: compile wasm-wips for node and web
       env:
         COMMAND: ${{ matrix.command }}
