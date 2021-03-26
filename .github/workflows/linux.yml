@@ -19,7 +19,8 @@ jobs:
 
     - name: inspect directory to view artifacts etc
       run: ls -ahl
-
+    
+    - nmp install
     - name: "run test"
       run: npm test:$COMMAND
 
