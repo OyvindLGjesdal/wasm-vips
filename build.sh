@@ -319,7 +319,7 @@ test -f "$TARGET/lib/pkgconfig/vips.pc" || (
     --with-lcms --with-jpeg --with-png --with-libwebp --with-tiff --without-giflib --without-rsvg --without-gsf --without-zlib \
     --without-fftw --without-magick --without-OpenEXR --without-nifti --without-heif --without-pdfium --without-poppler \
     --without-openslide --without-matio --without-cfitsio --without-pangoft2 --without-imagequant \
-    --without-doxygen --without-nsgif
+    --without-doxygen
   emmake make -C 'libvips' install
   emmake make install-pkgconfigDATA
 )
