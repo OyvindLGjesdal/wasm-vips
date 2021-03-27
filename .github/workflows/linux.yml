@@ -24,7 +24,11 @@ jobs:
       run: npm install
 
     - name: run test
+      env:
+        COMMAND: ${{ matrix.command }}
       run: npm run test:$COMMAND
 
     - name: "run benchmark"
-      run: npm run bench
+      env:
+        COMMAND: ${{ matrix.command }}      
+      run: npm run bench:$COMMAND
