@@ -28,12 +28,12 @@ jobs:
       with:
         name: build ${{ matrix.command }} 
         path: |
-          build
+          lib
 
     - name: run test
       env:
         COMMAND: ${{ matrix.command }}
-      run: npm run test:$COMMAND
+      run: npm run test:$COMMAND &
 
     - name: "run benchmark"
       env:
