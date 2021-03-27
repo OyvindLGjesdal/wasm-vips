@@ -30,7 +30,7 @@ EXPERIMENTAL_SIMD=false
 
 # Link-time optimizations (LTO), disabled by default
 # https://github.com/emscripten-core/emscripten/issues/10603
-LTO_FLAG=
+LTO_FLAG=true
 
 # JS BigInt to Wasm i64 integration, disabled by default
 WASM_BIGINT_FLAG=
@@ -74,7 +74,7 @@ if [ "$EXPERIMENTAL_SIMD" = "true" ]; then export CFLAGS+=" -munimplemented-simd
 if [ -n "$LTO_FLAG" ]; then export CFLAGS+=" -flto"; fi
 if [ -n "$WASM_BIGINT_FLAG" ]; then export CFLAGS+=" -DWASM_BIGINT"; fi
 export CXXFLAGS="$CFLAGS"
-export LDFLAGS="-L$TARGET/lib -O3"
+export LDFLAGS="-L$TARGET/lib -Os"
 if [ -n "$LTO_FLAG" ]; then export LDFLAGS+=" -flto"; fi
 if [ -n "$WASM_BIGINT_FLAG" ]; then export EMMAKEN_CFLAGS="$WASM_BIGINT_FLAG"; fi
 
