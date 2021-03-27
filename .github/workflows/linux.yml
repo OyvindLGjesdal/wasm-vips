@@ -23,14 +23,12 @@ jobs:
     - name: install dependencies for running tests
       run: npm install
 
-     - name: Archive build artifacts
-        uses: actions/upload-artifact@v2
-        env:
-          COMMAND: ${{ matrix.command }}
-        with:
-          name: build ${{ matrix.command }} 
-          path: |
-            build
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: build ${{ matrix.command }} 
+        path: |
+          build
 
     - name: run test
       env:
