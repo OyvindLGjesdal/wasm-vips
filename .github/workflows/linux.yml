@@ -35,7 +35,7 @@ jobs:
         COMMAND: ${{ matrix.command }}
       run: npm run test:$COMMAND &
 
-    - name: "run benchmark"
-      env:
-        COMMAND: ${{ matrix.command }}      
-      run: npm run bench:$COMMAND
+#    - name: "run benchmark"
+#      env:
+#        COMMAND: ${{ matrix.command }}      
+#      run: npm run bench:$COMMAND
