@@ -68,7 +68,7 @@ fi
 #export EMMAKEN_CFLAGS="-s INITIAL_MEMORY=64MB --source-map-base http://localhost:5000/lib/"
 
 # Common compiler flags
-export CFLAGS="-Os -fno-rtti -fno-exceptions -mnontrapping-fptoint --closure 1"
+export CFLAGS="-Os -fno-rtti -fno-exceptions -mnontrapping-fptoint -s DISABLE_EXCEPTION_CATCHING=1 -s ELIMINATE\_DUPLICATE\_FUNCTIONS=1"
 if [ "$SIMD" = "true" ]; then export CFLAGS+=" -msimd128"; fi
 if [ "$EXPERIMENTAL_SIMD" = "true" ]; then export CFLAGS+=" -munimplemented-simd128"; fi
 if [ -n "$LTO_FLAG" ]; then export CFLAGS+=" -flto"; fi
@@ -318,7 +318,8 @@ test -f "$TARGET/lib/pkgconfig/vips.pc" || (
     --disable-debug --disable-introspection --disable-deprecated --with-radiance --with-analyze --with-ppm --with-libexif \
     --with-lcms --with-jpeg --with-png --with-libwebp --with-tiff --without-giflib --without-rsvg --without-gsf --without-zlib \
     --without-fftw --without-magick --without-OpenEXR --without-nifti --without-heif --without-pdfium --without-poppler \
-    --without-openslide --without-matio --without-cfitsio --without-pangoft2 --without-imagequant
+    --without-openslide --without-matio --without-cfitsio --without-pangoft2 --without-imagequant \
+    --without-doxygen --without-nsgif
   emmake make -C 'libvips' install
   emmake make install-pkgconfigDATA
 )
