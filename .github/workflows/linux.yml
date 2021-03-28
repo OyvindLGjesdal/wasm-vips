@@ -32,6 +32,9 @@ jobs:
         path: |
           lib
 
+    - name: debug kernel
+      run: uname -r
+
     - name: run test
       env:
         COMMAND: ${{ matrix.command }}
