@@ -16,6 +16,8 @@ jobs:
       env:
         COMMAND: ${{ matrix.command }}
       run: npm run build:$COMMAND
+    
+#todo create cache
 
     - name: inspect directory to view artifacts etc
       run: ls -ahl
@@ -34,7 +36,7 @@ jobs:
       env:
         COMMAND: ${{ matrix.command }}
       run: npm run test:$COMMAND &
-
+  
 #    - name: "run benchmark"
 #      env:
 #        COMMAND: ${{ matrix.command }}      
