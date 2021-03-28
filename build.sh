@@ -161,16 +161,16 @@ test -f "$TARGET/lib/pkgconfig/zlib.pc" || (
 echo "============================================="
 echo "Compiling ffi"
 echo "============================================="
-#test -f "$TARGET/lib/pkgconfig/libffi.pc" || (
-#  mkdir $DEPS/ffi
-#  curl -Ls https://sourceware.org/pub/libffi/libffi-$VERSION_FFI.tar.gz | tar xzC $DEPS/ffi --strip-components=1
-#  cd $DEPS/ffi
-#  patch -p1 <$SOURCE_DIR/build/patches/libffi-emscripten.patch
-#  autoreconf -fiv
-#  emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
-#    --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs
-#  emmake make install
-#)
+test -f "$TARGET/lib/pkgconfig/libffi.pc" || (
+  mkdir $DEPS/ffi
+  curl -Ls https://sourceware.org/pub/libffi/libffi-$VERSION_FFI.tar.gz | tar xzC $DEPS/ffi --strip-components=1
+  cd $DEPS/ffi
+  patch -p1 <$SOURCE_DIR/build/patches/libffi-emscripten.patch
+  autoreconf -fiv
+  emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
+    --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs
+  emmake make install
+)
 
 echo "============================================="
 echo "Compiling glib"
@@ -196,6 +196,7 @@ test -f "$TARGET/lib/pkgconfig/expat.pc" || (
   cd $DEPS/expat
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
     --without-xmlwf --without-docbook --without-getrandom --without-sys-getrandom --without-examples --without-tests \
+    --disable-xml-context \ 
     expatcfg_cv_compiler_supports_visibility=no
   emmake make install
 )
