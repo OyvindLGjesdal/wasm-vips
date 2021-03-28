@@ -315,7 +315,7 @@ test -f "$TARGET/lib/pkgconfig/vips.pc" || (
   patch -p1 <$SOURCE_DIR/build/patches/vips-1492-emscripten.patch
   #patch -p1 <$SOURCE_DIR/build/patches/vips-1492-profiler.patch
   emconfigure ./autogen.sh --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
-    --disable-debug --disable-introspection --disable-deprecated --with-radiance --with-analyze --with-ppm --with-libexif \
+    --disable-debug --disable-introspection --disable-deprecated --without-radiance --without-analyze --without-ppm --with-libexif \
     --with-lcms --with-jpeg --with-png --with-libwebp --with-tiff --without-giflib --without-rsvg --without-gsf --without-zlib \
     --without-fftw --without-magick --without-OpenEXR --without-nifti --without-heif --without-pdfium --without-poppler \
     --without-openslide --without-matio --without-cfitsio --without-pangoft2 --without-imagequant
