@@ -196,7 +196,6 @@ test -f "$TARGET/lib/pkgconfig/expat.pc" || (
   cd $DEPS/expat
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
     --without-xmlwf --without-docbook --without-getrandom --without-sys-getrandom --without-examples --without-tests \
-    --disable-xml-context \ 
     expatcfg_cv_compiler_supports_visibility=no
   emmake make install
 )
@@ -209,7 +208,7 @@ test -f "$TARGET/lib/pkgconfig/libexif.pc" || (
   curl -Ls https://github.com/libexif/libexif/releases/download/libexif-${VERSION_EXIF//./_}-release/libexif-$VERSION_EXIF.tar.xz | tar xJC $DEPS/exif --strip-components=1
   cd $DEPS/exif
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
-    --disable-docs --disable-nls
+    --disable-docs --disable-nls  -DNO_VERBOSE_TAG_STRINGS -DNO_VERBOSE_TAG_DATA
   emmake make install
 )
 
