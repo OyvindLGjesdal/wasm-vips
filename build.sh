@@ -208,7 +208,8 @@ test -f "$TARGET/lib/pkgconfig/libexif.pc" || (
   curl -Ls https://github.com/libexif/libexif/releases/download/libexif-${VERSION_EXIF//./_}-release/libexif-$VERSION_EXIF.tar.xz | tar xJC $DEPS/exif --strip-components=1
   cd $DEPS/exif
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
-    --disable-docs --disable-nls  -DNO_VERBOSE_TAG_STRINGS -DNO_VERBOSE_TAG_DATA
+    --disable-docs --disable-nls \
+    CPPFLAGS="-DNO_VERBOSE_TAG_STRINGS -DNO_VERBOSE_TAG_DATA"
   emmake make install
 )
 
