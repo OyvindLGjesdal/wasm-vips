@@ -68,7 +68,7 @@ fi
 #export EMMAKEN_CFLAGS="-s INITIAL_MEMORY=64MB --source-map-base http://localhost:5000/lib/"
 
 # Common compiler flags
-export CFLAGS="-Oz -fno-rtti -fno-exceptions -mnontrapping-fptoint -s DISABLE_EXCEPTION_CATCHING=1 --closure 1 -flto -s ERROR_ON_UNDEFINED_SYMBOLS=0"
+export CFLAGS="-Oz -fno-rtti -fno-exceptions -mnontrapping-fptoint -s DISABLE_EXCEPTION_CATCHING=1 --closure 1 -flto -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Wno-error=implicit-function-declaration"
 if [ "$SIMD" = "true" ]; then export CFLAGS+=" -msimd128"; fi
 if [ "$EXPERIMENTAL_SIMD" = "true" ]; then export CFLAGS+=" -munimplemented-simd128"; fi
 if [ -n "$LTO_FLAG" ]; then export CFLAGS+=" -flto"; fi
