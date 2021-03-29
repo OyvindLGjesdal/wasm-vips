@@ -74,7 +74,7 @@ if [ "$EXPERIMENTAL_SIMD" = "true" ]; then export CFLAGS+=" -munimplemented-simd
 if [ -n "$LTO_FLAG" ]; then export CFLAGS+=" -flto"; fi
 if [ -n "$WASM_BIGINT_FLAG" ]; then export CFLAGS+=" -DWASM_BIGINT"; fi
 export CXXFLAGS="$CFLAGS"
-export LDFLAGS="-L$TARGET/lib -O3 -flto WASM_OBJECT_FILES=0"
+export LDFLAGS="-L$TARGET/lib -Oz"
 if [ -n "$LTO_FLAG" ]; then export LDFLAGS+=" -flto"; fi
 if [ -n "$WASM_BIGINT_FLAG" ]; then export EMMAKEN_CFLAGS="$WASM_BIGINT_FLAG"; fi
 
