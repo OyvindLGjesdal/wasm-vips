@@ -33,6 +33,7 @@ jobs:
         path: |
           lib
           config.log
+          build/deps/ffi/config.log
 
     - name: find debug
       run: find -ipath "*config.log"
