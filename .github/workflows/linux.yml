@@ -34,6 +34,14 @@ jobs:
           lib
           config.log
           build/deps/ffi/config.log
+          build/deps/exif/config.log
+          build/deps/png16/config.log
+          build/deps/webp/config.log
+          build/deps/tiff/config.log
+          build/deps/expat/config.log
+          build/deps/lcms2/config.log
+          build/deps/vips/config.log
+
 
     - name: find debug
       run: find -ipath "*config.log"
