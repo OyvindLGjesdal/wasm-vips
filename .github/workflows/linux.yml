@@ -27,10 +27,12 @@ jobs:
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v2
+      if: ${{ always() }}
       with:
         name: build ${{ matrix.command }} 
         path: |
           lib
+          config.log
 
     - name: debug kernel
       run: uname -r
