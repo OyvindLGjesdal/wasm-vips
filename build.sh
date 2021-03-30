@@ -91,7 +91,7 @@ export MESON_CROSS="$SOURCE_DIR/build/emscripten-crossfile.meson"
 # Wait for https://github.com/libvips/libvips/pull/1709 instead.
 VERSION_ZLIBNG=2.0.1
 VERSION_FFI=3.3
-VERSION_GLIB=2.68.0
+VERSION_GLIB=2.67.4
 VERSION_EXPAT=2.2.10
 VERSION_EXIF=0.6.22
 VERSION_LCMS2=2.11
@@ -100,7 +100,7 @@ VERSION_PNG16=1.6.37
 VERSION_SPNG=0.6.2
 VERSION_WEBP=1.2.0
 VERSION_TIFF=4.2.0
-VERSION_VIPS=8.10.6
+VERSION_VIPS=8.10.5
 
 # Remove patch version component
 without_patch() {
