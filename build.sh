@@ -182,7 +182,7 @@ test -f "$TARGET/lib/pkgconfig/glib-2.0.pc" || (
   patch -p1 <$SOURCE_DIR/build/patches/glib-emscripten.patch
   meson setup _build --prefix=$TARGET --cross-file=$MESON_CROSS --default-library=static --buildtype=release \
     -Diconv="libc" -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled -Dinternal_pcre=true \
-    -Ddtrace=false  -Dsystemtap=false -Dgtk_doc=false \
+    -Ddtrace=false -Dgtk_doc=false \
     -Dtests=false -Dglib_assert=false -Dglib_checks=false
   emmake ninja -C _build install
 )
