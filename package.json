@@ -17,7 +17,7 @@
     "lib/node/**"
   ],
   "scripts": {
-    "build:web": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh -e web && uname -r",
+    "build:web": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh -e web --enable-wasm-bigint && uname -r",
     "build:node": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh -e node --enable-wasm-bigint --enable-lto",
     "build": "npm run build:node",
     "test:web": "serve -c test/unit/serve.json",
