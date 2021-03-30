@@ -1,0 +1,62 @@
+name: Emscripten CI for wasm-vips
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        command: [node, web]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: compile wasm-wips for node and web
+      env:
+        COMMAND: ${{ matrix.command }}
+      run: npm run build:$COMMAND
+    
+#todo create cache
+
+    - name: inspect directory to view artifacts etc
+      run: ls -ahl
+    
+    - name: install dependencies for running tests
+      run: npm install
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v2
+      if: ${{ always() }}
+      with:
+        name: build ${{ matrix.command }} 
+        path: |
+          lib
+          config.log
+          build/deps/ffi/config.log
+          build/deps/exif/config.log
+          build/deps/png16/config.log
+          build/deps/webp/config.log
+          build/deps/tiff/config.log
+          build/deps/expat/config.log
+          build/deps/lcms2/config.log
+          build/deps/vips/config.log
+
+
+    - name: find debug
+      run: find -ipath "*config.log"
+      if: ${{ always() }}
+
+    - name: debug kernel
+      run: uname -r
+
+    - name: run test
+      env:
+        COMMAND: ${{ matrix.command }}
+      run: npm run test:$COMMAND &
+  
+#    - name: "run benchmark"
+#      env:
+#        COMMAND: ${{ matrix.command }}      
+#      run: npm run bench:$COMMAND
