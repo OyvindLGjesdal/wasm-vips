@@ -25,9 +25,6 @@ ENVIRONMENT="web,node"
 # Single Instruction Multiple Data (SIMD), disabled by default
 SIMD=false
 
-# Support for v128.const which was only recently implemented in V8, disabled by default
-EXPERIMENTAL_SIMD=false
-
 # Link-time optimizations (LTO), disabled by default
 # https://github.com/emscripten-core/emscripten/issues/10603
 LTO_FLAG=
@@ -39,7 +36,6 @@ WASM_BIGINT_FLAG=
 while [ $# -gt 0 ]; do
   case $1 in
     --enable-simd) SIMD=true ;;
-    --enable-experimental-simd) SIMD=true EXPERIMENTAL_SIMD=true ;;
     --enable-lto) LTO_FLAG=--lto ;;
     --enable-wasm-bigint) WASM_BIGINT_FLAG="-s WASM_BIGINT" ;;
     -e|--environment) ENVIRONMENT="$2"; shift ;;
@@ -70,7 +66,6 @@ fi
 # Common compiler flags
 export CFLAGS="-O3 -fno-rtti -fno-exceptions -mnontrapping-fptoint"
 if [ "$SIMD" = "true" ]; then export CFLAGS+=" -msimd128"; fi
-if [ "$EXPERIMENTAL_SIMD" = "true" ]; then export CFLAGS+=" -munimplemented-simd128"; fi
 if [ -n "$LTO_FLAG" ]; then export CFLAGS+=" -flto"; fi
 if [ -n "$WASM_BIGINT_FLAG" ]; then export CFLAGS+=" -DWASM_BIGINT"; fi
 export CXXFLAGS="$CFLAGS"
@@ -89,10 +84,10 @@ export MESON_CROSS="$SOURCE_DIR/build/emscripten-crossfile.meson"
 # Dependency version numbers
 # TODO(kleisauke): GIF support is currently missing, giflib abandoned autotools which makes compilation difficult
 # Wait for https://github.com/libvips/libvips/pull/1709 instead.
-VERSION_ZLIBNG=2.0.1
+VERSION_ZLIBNG=2.0.2
 VERSION_FFI=3.3
 VERSION_GLIB=2.68.0
-VERSION_EXPAT=2.2.10
+VERSION_EXPAT=2.3.0
 VERSION_EXIF=0.6.22
 VERSION_LCMS2=2.11
 VERSION_JPEG=2.0.6
@@ -168,7 +163,7 @@ test -f "$TARGET/lib/pkgconfig/libffi.pc" || (
   patch -p1 <$SOURCE_DIR/build/patches/libffi-emscripten.patch
   autoreconf -fiv
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
-    --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs
+    --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs
   emmake make install
 )
 
@@ -207,7 +202,8 @@ test -f "$TARGET/lib/pkgconfig/libexif.pc" || (
   curl -Ls https://github.com/libexif/libexif/releases/download/libexif-${VERSION_EXIF//./_}-release/libexif-$VERSION_EXIF.tar.xz | tar xJC $DEPS/exif --strip-components=1
   cd $DEPS/exif
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
-    --disable-docs --disable-nls
+    --disable-docs --disable-nls --without-libiconv-prefix --without-libintl-prefix \
+    CPPFLAGS="-DNO_VERBOSE_TAG_STRINGS -DNO_VERBOSE_TAG_DATA"
   emmake make install
 )
 
@@ -302,7 +298,7 @@ echo "Compiling vips"
 echo "============================================="
 test -f "$TARGET/lib/pkgconfig/vips.pc" || (
   mkdir $DEPS/vips
-  curl -Ls https://github.com/libvips/libvips/releases/download/v$VERSION_VIPS-beta2/vips-$VERSION_VIPS.tar.gz | tar xzC $DEPS/vips --strip-components=1
+  curl -Ls https://github.com/libvips/libvips/releases/download/v$VERSION_VIPS/vips-$VERSION_VIPS.tar.gz | tar xzC $DEPS/vips --strip-components=1
   #curl -Ls https://github.com/libvips/libvips/tarball/$VERSION_VIPS | tar xzC $DEPS/vips --strip-components=1
   cd $DEPS/vips
   # Emscripten specific patches
