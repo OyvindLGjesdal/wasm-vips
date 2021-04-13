@@ -51,10 +51,8 @@ jobs:
     - name: debug kernel
       run: uname -r
 
-    - name: run test
-      env:
-        COMMAND: ${{ matrix.command }}
-      run: npm run test:$COMMAND &
+    - name: run test     
+      run: npm run test
   
 #    - name: "run benchmark"
 #      env:
