@@ -51,17 +51,17 @@ else
 fi
 
 # Handy for debugging
-#export CFLAGS="-O0 -g4"
+#export CFLAGS="-O0 -gsource-map"
 #export CXXFLAGS="$CFLAGS"
-#export LDFLAGS="-L$TARGET/lib -O0"
-#export EMMAKEN_CFLAGS="--source-map-base http://localhost:5000/lib/"
+#export LDFLAGS="-L$TARGET/lib -O0 -gsource-map"
+#export EMMAKEN_CFLAGS="--source-map-base http://localhost:5000/lib/web/"
 #export EMCC_DEBUG="1"
 
 # Handy for catching bugs
-#export CFLAGS="-Os -g4 -fsanitize=address"
+#export CFLAGS="-Os -gsource-map -fsanitize=address"
 #export CXXFLAGS="$CFLAGS"
-#export LDFLAGS="-L$TARGET/lib -Os -g4 -fsanitize=address"
-#export EMMAKEN_CFLAGS="-s INITIAL_MEMORY=64MB --source-map-base http://localhost:5000/lib/"
+#export LDFLAGS="-L$TARGET/lib -Os -gsource-map -fsanitize=address"
+#export EMMAKEN_CFLAGS="-s INITIAL_MEMORY=64MB --source-map-base http://localhost:5000/lib/web/"
 
 # Common compiler flags
 export CFLAGS="-O3 -fno-rtti -fno-exceptions -mnontrapping-fptoint"
@@ -84,17 +84,17 @@ export MESON_CROSS="$SOURCE_DIR/build/emscripten-crossfile.meson"
 # Dependency version numbers
 # TODO(kleisauke): GIF support is currently missing, giflib abandoned autotools which makes compilation difficult
 # Wait for https://github.com/libvips/libvips/pull/1709 instead.
-VERSION_ZLIBNG=2.0.2
+VERSION_ZLIBNG=2.0.3
 VERSION_FFI=3.3
-VERSION_GLIB=2.68.0
-VERSION_EXPAT=2.3.0
+VERSION_GLIB=2.68.2
+VERSION_EXPAT=2.4.1
 VERSION_EXIF=0.6.22
-VERSION_LCMS2=2.11
-VERSION_JPEG=2.0.6
+VERSION_LCMS2=2.12
+VERSION_JPEG=2.1.0
 VERSION_PNG16=1.6.37
-VERSION_SPNG=0.6.2
+VERSION_SPNG=0.6.3
 VERSION_WEBP=1.2.0
-VERSION_TIFF=4.2.0
+VERSION_TIFF=4.3.0
 VERSION_VIPS=8.10.6
 
 # Remove patch version component
@@ -150,7 +150,7 @@ test -f "$TARGET/lib/pkgconfig/zlib.pc" || (
   sed -i 's/\sx86.l*o//g' configure
   emconfigure ./configure --prefix=$TARGET --static --zlib-compat ${DISABLE_SIMD:+--without-optimizations} \
     ${ENABLE_SIMD:+--force-sse2} --without-acle --without-neon
-  emmake make install
+  make install
 )
 
 echo "============================================="
@@ -164,7 +164,7 @@ test -f "$TARGET/lib/pkgconfig/libffi.pc" || (
   autoreconf -fiv
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
     --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs
-  emmake make install
+  make install SUBDIRS='include'
 )
 
 echo "============================================="
@@ -178,7 +178,7 @@ test -f "$TARGET/lib/pkgconfig/glib-2.0.pc" || (
   meson setup _build --prefix=$TARGET --cross-file=$MESON_CROSS --default-library=static --buildtype=release \
     -Diconv="libc" -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled -Dinternal_pcre=true \
     -Dtests=false -Dglib_assert=false -Dglib_checks=false
-  emmake ninja -C _build install
+  ninja -C _build install
 )
 
 echo "============================================="
@@ -191,7 +191,7 @@ test -f "$TARGET/lib/pkgconfig/expat.pc" || (
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
     --without-xmlwf --without-docbook --without-getrandom --without-sys-getrandom --without-examples --without-tests \
     expatcfg_cv_compiler_supports_visibility=no
-  emmake make install
+  make install
 )
 
 echo "============================================="
@@ -204,7 +204,8 @@ test -f "$TARGET/lib/pkgconfig/libexif.pc" || (
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
     --disable-docs --disable-nls --without-libiconv-prefix --without-libintl-prefix \
     CPPFLAGS="-DNO_VERBOSE_TAG_STRINGS -DNO_VERBOSE_TAG_DATA"
-  emmake make install
+  make -C 'libexif' install doc_DATA=
+  make install-pkgconfigDATA
 )
 
 echo "============================================="
@@ -212,13 +213,13 @@ echo "Compiling lcms2"
 echo "============================================="
 test -f "$TARGET/lib/pkgconfig/lcms2.pc" || (
   mkdir $DEPS/lcms2
-  curl -Ls https://downloads.sourceforge.net/project/lcms/lcms/$VERSION_LCMS2/lcms2-$VERSION_LCMS2.tar.gz | tar xzC $DEPS/lcms2 --strip-components=1
+  curl -Ls https://github.com/mm2/Little-CMS/releases/download/lcms$VERSION_LCMS2/lcms2-$VERSION_LCMS2.tar.gz | tar xzC $DEPS/lcms2 --strip-components=1
   cd $DEPS/lcms2
   # Disable threading support, we rely on libvips' thread pool
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
    --without-threads --without-jpeg --without-tiff --without-zlib \
    ax_cv_have_func_attribute_visibility=0
-  emmake make install
+  make install SUBDIRS='src include'
 )
 
 echo "============================================="
@@ -231,7 +232,7 @@ test -f "$TARGET/lib/pkgconfig/libjpeg.pc" || (
   # https://github.com/libjpeg-turbo/libjpeg-turbo/issues/250#issuecomment-407615180
   emcmake cmake -B_build -H. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TARGET -DENABLE_STATIC=TRUE \
     -DENABLE_SHARED=FALSE -DWITH_JPEG8=TRUE -DWITH_SIMD=FALSE -DWITH_TURBOJPEG=FALSE
-  emmake make -C _build install
+  make -C _build install
 )
 
 echo "============================================="
@@ -246,8 +247,8 @@ test -f "$TARGET/lib/pkgconfig/libpng16.pc" || (
   # The hardware optimizations in libpng are only used for reading PNG images, since we use libspng
   # for that we can safely pass --disable-hardware-optimizations and compile with -DPNG_NO_READ
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
-    --disable-hardware-optimizations CPPFLAGS="-DPNG_NO_READ"
-  emmake make install
+    --disable-hardware-optimizations --disable-unversioned-libpng-config --without-binconfigs CPPFLAGS="-DPNG_NO_READ"
+  make install dist_man_MANS= bin_PROGRAMS=
 )
 
 echo "============================================="
@@ -261,7 +262,7 @@ test -f "$TARGET/lib/pkgconfig/spng.pc" || (
   patch -p1 <$SOURCE_DIR/build/patches/libspng-emscripten.patch
   meson setup _build --prefix=$TARGET --cross-file=$MESON_CROSS --default-library=static --buildtype=release \
     -Dstatic_zlib=true ${DISABLE_SIMD:+-Denable_opt=false} ${ENABLE_SIMD:+-Dc_args="$CFLAGS -msse2"}
-  emmake ninja -C _build install
+  ninja -C _build install
 )
 
 echo "============================================="
@@ -278,7 +279,7 @@ test -f "$TARGET/lib/pkgconfig/libwebp.pc" || (
     ${DISABLE_SIMD:+--disable-sse2 --disable-sse4.1} ${ENABLE_SIMD:+--enable-sse2 --enable-sse4.1} --disable-neon \
     --disable-gl --disable-sdl --disable-png --disable-jpeg --disable-tiff --disable-gif --disable-threading \
     --enable-libwebpmux --enable-libwebpdemux CPPFLAGS="-DWEBP_EXTERN=extern -DWEBP_DISABLE_STATS"
-  emmake make install
+  make -C 'src' install
 )
 
 echo "============================================="
@@ -290,7 +291,8 @@ test -f "$TARGET/lib/pkgconfig/libtiff-4.pc" || (
   cd $DEPS/tiff
   emconfigure ./configure --host=$CHOST --prefix=$TARGET --enable-static --disable-shared --disable-dependency-tracking \
     --disable-mdi --disable-pixarlog --disable-old-jpeg --disable-cxx
-  emmake make install
+  make -C 'libtiff' install noinst_PROGRAMS=
+  make install-pkgconfigDATA
 )
 
 echo "============================================="
@@ -315,8 +317,8 @@ test -f "$TARGET/lib/pkgconfig/vips.pc" || (
     --with-lcms --with-jpeg --with-png --with-libwebp --with-tiff --without-giflib --without-rsvg --without-gsf --without-zlib \
     --without-fftw --without-magick --without-OpenEXR --without-nifti --without-heif --without-pdfium --without-poppler \
     --without-openslide --without-matio --without-cfitsio --without-pangoft2 --without-imagequant
-  emmake make -C 'libvips' install
-  emmake make install-pkgconfigDATA
+  make -C 'libvips' install
+  make install-pkgconfigDATA
 )
 
 echo "============================================="
@@ -327,7 +329,7 @@ echo "============================================="
   cd $DEPS/wasm-vips
   emcmake cmake $SOURCE_DIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="$SOURCE_DIR/lib" \
     -DENVIRONMENT=${ENVIRONMENT//,/;}
-  emmake make
+  make
   # FinalizationGroup -> FinalizationRegistry, see:
   # https://github.com/tc39/proposal-weakrefs/issues/180
   # https://github.com/emscripten-core/emscripten/issues/11436#issuecomment-645870155
