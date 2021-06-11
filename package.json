@@ -17,9 +17,9 @@
     "lib/node/**"
   ],
   "scripts": {
-    "build:web": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh -e web --enable-wasm-bigint && uname -r",
-    "build:node": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh -e node --enable-wasm-bigint --enable-lto",
-    "build": "npm run build:node",
+   "build:web": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh -e web",
+   "build:node": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh -e node --enable-simd", 
+   "build": "npm run build:node",
     "test:web": "serve -c test/unit/serve.json",
     "test:node": "node --experimental-wasm-threads --experimental-wasm-simd --wasm-simd-post-mvp node_modules/mocha/bin/mocha -s 5000 -t 60000 test/unit/*.js -r test/unit/node-helper.js",
     "test": "npm run test:node",
