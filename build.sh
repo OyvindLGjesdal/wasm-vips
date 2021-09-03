@@ -69,7 +69,7 @@ if [ "$LTO" = "true" ]; then LTO_FLAG=--lto; fi
 #export CFLAGS+=" --source-map-base http://localhost:5000/lib/web/"
 
 # Common compiler flags
-export CFLAGS="-Oz -fno-rtti -fno-exceptions -mnontrapping-fptoint -s DISABLE_EXCEPTION_CATCHING=1 -s LLD_REPORT_UNDEFINED --closure 1"
+export CFLAGS="-O3 -fno-rtti -fno-exceptions -mnontrapping-fptoint"
 if [ "$SIMD" = "true" ]; then export CFLAGS+=" -msimd128"; fi
 if [ "$WASM_BIGINT" = "true" ]; then
   # libffi needs to detect WASM_BIGINT support at compile time
@@ -174,9 +174,10 @@ test -f "$TARGET/lib/pkgconfig/glib-2.0.pc" || (
   curl -Lks https://download.gnome.org/sources/glib/$(without_patch $VERSION_GLIB)/glib-$VERSION_GLIB.tar.xz | tar xJC $DEPS/glib --strip-components=1
   cd $DEPS/glib
   patch -p1 <$SOURCE_DIR/build/patches/glib-emscripten.patch
+  patch -p1 <$SOURCE_DIR/build/patches/glib-function-pointers.patch
   meson setup _build --prefix=$TARGET --cross-file=$MESON_CROSS --default-library=static --buildtype=release \
-  -Diconv="libc" -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled -Dinternal_pcre=true \  
-  -Dtests=false -Dglib_assert=false -Dglib_checks=false
+    --force-fallback-for=libpcre -Diconv="libc" -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
+    -Dtests=false -Dglib_assert=false -Dglib_checks=false
   ninja -C _build install
 )
 
