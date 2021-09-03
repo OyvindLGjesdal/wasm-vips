@@ -13,9 +13,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: compile wasm-wips for node and web
-      env:
-        COMMAND: ${{ matrix.command }}
-      run: npm run build:$COMMAND
+      run: npm run build:${{ matrix.command }}"
     
 #todo create cache
 
