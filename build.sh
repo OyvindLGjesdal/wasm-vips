@@ -174,7 +174,6 @@ test -f "$TARGET/lib/pkgconfig/glib-2.0.pc" || (
   curl -Lks https://download.gnome.org/sources/glib/$(without_patch $VERSION_GLIB)/glib-$VERSION_GLIB.tar.xz | tar xJC $DEPS/glib --strip-components=1
   cd $DEPS/glib
   patch -p1 <$SOURCE_DIR/build/patches/glib-emscripten.patch
-  patch -p1 <$SOURCE_DIR/build/patches/glib-function-pointers.patch
   meson setup _build --prefix=$TARGET --cross-file=$MESON_CROSS --default-library=static --buildtype=release \
   -Diconv="libc" -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled -Dinternal_pcre=true \  
   -Dtests=false -Dglib_assert=false -Dglib_checks=false
