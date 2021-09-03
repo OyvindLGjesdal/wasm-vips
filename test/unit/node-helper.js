@@ -1,30 +1,35 @@
 'use strict';
 
-const Chai = require('chai');
+import Vips from '../../lib/node-es6/vips.mjs';
 
-const Helpers = require('./helpers');
-const Vips = require('../../lib/node/vips.js');
+import url from 'url';
+import path from 'path';
+import { expect } from 'chai';
 
-global.expect = Chai.expect;
-global.Helpers = Helpers;
+globalThis.url = url;
+globalThis.path = path;
+globalThis.expect = expect;
 
-exports.mochaGlobalSetup = async function () {
-    const options = {
-        preRun: (module) => {
-            module['EMBIND_AUTOMATIC_DELETELATER'] = true;
-            module.setDelayFunction(fn => global.cleanup = fn);
+export async function mochaGlobalSetup () {
+  const options = {
+    preRun: (module) => {
+      module.EMBIND_AUTOMATIC_DELETELATER = true;
+      module.setDelayFunction(fn => {
+        globalThis.cleanup = fn;
+      });
 
-            // Handy for debugging
-            // module.ENV.G_MESSAGES_DEBUG = 'VIPS';
+      // Handy for debugging
+      // module.ENV.G_MESSAGES_DEBUG = 'VIPS';
+      // module.ENV.VIPS_LEAK = '1';
 
-            // Hide warning messages
-            module.ENV.VIPS_WARNING = '0';
-        }
-    };
-    global.vips = await Vips(options);
+      // Hide warning messages
+      module.ENV.VIPS_WARNING = '0';
+    }
+  };
+  globalThis.vips = await Vips(options);
 }
 
-exports.mochaGlobalTeardown = function () {
-    // We are done, shutdown libvips and the runtime of Emscripten
-    global.vips.shutdown();
+export function mochaGlobalTeardown () {
+  // We are done, shutdown libvips and the runtime of Emscripten
+  globalThis.vips.shutdown();
 }

@@ -12,24 +12,54 @@
   },
   "license": "MIT",
   "author": "Kleis Auke Wolthuizen",
-  "main": "lib/node/vips.js",
+  "type": "commonjs",
+  "exports": {
+    "node": {
+      "import": "./lib/node-es6/vips.mjs",
+      "require": "./lib/node-commonjs/vips.js"
+    },
+    "default": "./lib/web/vips.js"
+  },
+  "main": "lib/node-commonjs/vips.js",
+  "types": "lib/vips.d.ts",
   "files": [
-    "lib/node/**"
+    "lib/node-commonjs/*.js",
+    "lib/node-es6/*.mjs",
+    "lib/web/*.js",
+    "lib/vips.d.ts",
+    "lib/vips.wasm"
   ],
   "scripts": {
-   "build:web": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh -e web",
-   "build:node": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh -e node --enable-simd", 
-   "build": "npm run build:node",
+    "build": "docker build -t wasm-vips . && docker run --rm -v $(pwd):/src wasm-vips ./build.sh",
+    "test": "npm run test:lint && npm run test:node",
+    "test:lint": "semistandard",
+    "test:node": "cd test/unit && npm run test",
     "test:web": "serve -c test/unit/serve.json",
-    "test:node": "node --experimental-wasm-threads --experimental-wasm-simd --wasm-simd-post-mvp node_modules/mocha/bin/mocha -s 5000 -t 60000 test/unit/*.js -r test/unit/node-helper.js",
-    "test": "npm run test:node",
-    "bench:web": "serve -c test/bench/serve.json",
+    "bench": "npm run bench:node",
     "bench:node": "cd test/bench && npm run test",
-    "bench": "npm run bench:node"
+    "bench:web": "serve -c test/bench/serve.json"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
-    "mocha": "^8.4.0",
-    "serve": "^11.3.2"
+    "semistandard": "^16.0.1",
+    "serve": "^12.0.0"
+  },
+  "engines": {
+    "node": ">=16.4.0"
+  },
+  "semistandard": {
+    "globals": [
+      "vips",
+      "expect",
+      "cleanup"
+    ],
+    "ignore": [
+      "src/closure-externs/wasm-vips.js",
+      "test/bench/perf.js"
+    ],
+    "env": [
+      "browser",
+      "node",
+      "mocha"
+    ]
   }
 }

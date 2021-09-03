@@ -26,7 +26,7 @@ index 1111111..2222222 100644
  appinfo_sources = []
  contenttype_sources = []
  portal_sources = []
-@@ -418,7 +412,6 @@ if host_system != 'windows'
+@@ -419,7 +413,6 @@ if host_system != 'windows'
  
    subdir('xdgmime')
    internal_deps += [xdgmime_lib]
@@ -34,7 +34,7 @@ index 1111111..2222222 100644
  
    install_headers(gio_unix_include_headers, subdir : 'gio-unix-2.0/gio')
  
-@@ -754,20 +747,17 @@ gioenumtypes_dep = declare_dependency(sources : [gioenumtypes_h, glib_enumtypes_
+@@ -758,20 +751,17 @@ gioenumtypes_dep = declare_dependency(sources : [gioenumtypes_h, glib_enumtypes_
  if glib_conf.has('HAVE_SYS_INOTIFY_H') and have_func_inotify_init1
    subdir('inotify')
    internal_deps += [ inotify_lib ]
@@ -55,7 +55,7 @@ index 1111111..2222222 100644
  endif
  
  if have_bash
-@@ -803,12 +793,12 @@ endif
+@@ -807,12 +797,12 @@ endif
  libgio = library('gio-2.0',
    gioenumtypes_h, gioenumtypes_c, gnetworking_h, gio_sources,
    gio_dtrace_hdr, gio_dtrace_obj,
@@ -82,11 +82,11 @@ diff --git a/glib/meson.build b/glib/meson.build
 index 1111111..2222222 100644
 --- a/glib/meson.build
 +++ b/glib/meson.build
-@@ -23,15 +23,8 @@ libsysprof_capture_dep = dependency('sysprof-capture-4', version: '>= 3.38.0',
+@@ -20,15 +20,8 @@ libsysprof_capture_dep = dependency('sysprof-capture-4', version: '>= 3.38.0',
  )
  glib_conf.set('HAVE_SYSPROF', libsysprof_capture_dep.found())
  
--# TODO: gnulib_objects, pcre_objects and pcre_deps are a workaround for
+-# TODO: gnulib_objects is a workaround for
 -# <https://github.com/mesonbuild/meson/issues/3934> and
 -# <https://github.com/mesonbuild/meson/issues/3937>. When we can depend
 -# on a meson version where those are fixed, revert the commit that
@@ -98,7 +98,7 @@ index 1111111..2222222 100644
    glib_conf.set ('gl_unused', '')
    glib_conf.set ('gl_extern_inline', '')
  else
-@@ -120,7 +113,6 @@ else
+@@ -117,7 +110,6 @@ else
    endif
  
    subdir('gnulib')
@@ -106,31 +106,19 @@ index 1111111..2222222 100644
  endif
  
  glib_headers = files(
-@@ -357,19 +349,10 @@ if use_pcre_static_flag
-   pcre_static_args = ['-DPCRE_STATIC']
- endif
- 
--if use_system_pcre
--  pcre_deps = [pcre]
--  pcre_objects = []
--else
--  pcre_deps = []
--  pcre_objects = [libpcre.extract_all_objects()]
--endif
--
- glib_c_args = ['-DG_LOG_DOMAIN="GLib"', '-DGLIB_COMPILATION'] + pcre_static_args + glib_hidden_visibility_args
+@@ -359,7 +351,6 @@ glib_c_args = ['-DG_LOG_DOMAIN="GLib"', '-DGLIB_COMPILATION'] + pcre_static_args
  libglib = library('glib-2.0',
    glib_dtrace_obj, glib_dtrace_hdr,
    sources : [deprecated_sources, glib_sources],
--  objects : [charset_lib.extract_all_objects()] + gnulib_objects + pcre_objects,
+-  objects : [charset_lib.extract_all_objects()] + gnulib_objects,
    version : library_version,
    soversion : soversion,
    darwin_versions : darwin_versions,
-@@ -377,7 +360,8 @@ libglib = library('glib-2.0',
+@@ -367,7 +358,8 @@ libglib = library('glib-2.0',
    # intl.lib is not compatible with SAFESEH
    link_args : [noseh_link_args, glib_link_flags, win32_ldflags],
    include_directories : configinc,
--  dependencies : pcre_deps + [thread_dep, librt] + libintl_deps + libiconv + platform_deps + [gnulib_libm_dependency, libm] + [libsysprof_capture_dep],
+-  dependencies : [pcre, thread_dep, librt] + libintl_deps + libiconv + platform_deps + [gnulib_libm_dependency, libm] + [libsysprof_capture_dep],
 +  link_with : [charset_lib, gnulib_lib],
 +  dependencies : [pcre, thread_dep, librt] + libintl_deps + libiconv + platform_deps + [libm, libsysprof_capture_dep],
    c_args : glib_c_args,
@@ -151,7 +139,7 @@ diff --git a/gio/meson.build b/gio/meson.build
 index 1111111..2222222 100644
 --- a/gio/meson.build
 +++ b/gio/meson.build
-@@ -800,7 +800,7 @@ libgio = library('gio-2.0',
+@@ -804,7 +804,7 @@ libgio = library('gio-2.0',
    include_directories : [configinc, gioinc],
    link_with : internal_deps,
    #  '$(gio_win32_res_ldflag)',
@@ -187,7 +175,7 @@ diff --git a/meson.build b/meson.build
 index 1111111..2222222 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -1815,7 +1815,7 @@ atomicdefine = '''
+@@ -1833,7 +1833,7 @@ atomicdefine = '''
  # We know that we can always use real ("lock free") atomic operations with MSVC
  if cc.get_id() == 'msvc' or cc.get_id() == 'clang-cl' or cc.links(atomictest, name : 'atomic ops')
    have_atomic_lock_free = true
@@ -208,7 +196,7 @@ diff --git a/meson.build b/meson.build
 index 1111111..2222222 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -637,7 +637,7 @@ if host_system != 'windows' and cc.has_function('posix_memalign', prefix : '#inc
+@@ -642,7 +642,7 @@ if host_system != 'windows' and cc.has_function('posix_memalign', prefix : '#inc
  endif
  
  # Check that posix_spawn() is usable; must use header
@@ -249,7 +237,7 @@ diff --git a/meson.build b/meson.build
 index 1111111..2222222 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -419,7 +419,7 @@ foreach m : struct_members
+@@ -424,7 +424,7 @@ foreach m : struct_members
  endforeach
  
  # Compiler flags
@@ -258,7 +246,7 @@ index 1111111..2222222 100644
    warning_c_args = [
      '-Wduplicated-branches',
      '-Wimplicit-fallthrough',
-@@ -1458,13 +1458,13 @@ g_sizet_compatibility = {
+@@ -1476,13 +1476,13 @@ g_sizet_compatibility = {
    'long long': sizet_size == long_long_size,
  }
  
@@ -278,376 +266,8 @@ index 1111111..2222222 100644
 
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Kleis Auke Wolthuizen <github@kleisauke.nl>
-Date: Fri, 20 Sep 2019 16:05:00 +0200
-Subject: [PATCH 7/11] Fix function pointer cast issues
-
-It is undefined behavior in C and C++ to cast a function pointer
-to another type and call it that way. This does work in most native
-platforms, however, despite it being UB, but in WASM it can fail.
-
-See:
-https://emscripten.org/docs/porting/guidelines/function_pointer_issues.html
-
-Upstream-Status: Pending
-
-diff --git a/gobject/gobject.c b/gobject/gobject.c
-index 1111111..2222222 100644
---- a/gobject/gobject.c
-+++ b/gobject/gobject.c
-@@ -189,7 +189,8 @@ G_STATIC_ASSERT(G_STRUCT_OFFSET(GObject, qdata) == G_STRUCT_OFFSET(GObjectReal,
- /* --- prototypes --- */
- static void	g_object_base_class_init		(GObjectClass	*class);
- static void	g_object_base_class_finalize		(GObjectClass	*class);
--static void	g_object_do_class_init			(GObjectClass	*class);
-+static void	g_object_do_class_init			(GObjectClass	*class,
-+							 gpointer	 class_data);
- static void	g_object_init				(GObject	*object,
- 							 GObjectClass	*class);
- static GObject*	g_object_constructor			(GType                  type,
-@@ -496,7 +497,8 @@ g_object_base_class_finalize (GObjectClass *class)
- }
- 
- static void
--g_object_do_class_init (GObjectClass *class)
-+g_object_do_class_init (GObjectClass *class,
-+                        gpointer      class_data)
- {
-   /* read the comment about typedef struct CArray; on why not to change this quark */
-   quark_closure_array = g_quark_from_static_string ("GObject-closure-array");
-diff --git a/gobject/gparam.h b/gobject/gparam.h
-index 1111111..2222222 100644
---- a/gobject/gparam.h
-+++ b/gobject/gparam.h
-@@ -378,7 +378,8 @@ struct _GParamSpecTypeInfo
-   /* type system portion */
-   guint16         instance_size;                               /* obligatory */
-   guint16         n_preallocs;                                 /* optional */
--  void		(*instance_init)	(GParamSpec   *pspec); /* optional */
-+  void		(*instance_init)	(GParamSpec   *pspec,  /* optional */
-+					 gpointer      class_data);
- 
-   /* class portion */
-   GType           value_type;				       /* obligatory */
-diff --git a/gobject/gparamspecs.c b/gobject/gparamspecs.c
-index 1111111..2222222 100644
---- a/gobject/gparamspecs.c
-+++ b/gobject/gparamspecs.c
-@@ -61,7 +61,8 @@
- 
- /* --- param spec functions --- */
- static void
--param_char_init (GParamSpec *pspec)
-+param_char_init (GParamSpec *pspec,
-+                 gpointer    class_data)
- {
-   GParamSpecChar *cspec = G_PARAM_SPEC_CHAR (pspec);
-   
-@@ -90,7 +91,8 @@ param_char_validate (GParamSpec *pspec,
- }
- 
- static void
--param_uchar_init (GParamSpec *pspec)
-+param_uchar_init (GParamSpec *pspec,
-+                  gpointer    class_data)
- {
-   GParamSpecUChar *uspec = G_PARAM_SPEC_UCHAR (pspec);
-   
-@@ -137,7 +139,8 @@ param_boolean_validate (GParamSpec *pspec,
- }
- 
- static void
--param_int_init (GParamSpec *pspec)
-+param_int_init (GParamSpec *pspec,
-+                gpointer    class_data)
- {
-   GParamSpecInt *ispec = G_PARAM_SPEC_INT (pspec);
-   
-@@ -177,7 +180,8 @@ param_int_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_uint_init (GParamSpec *pspec)
-+param_uint_init (GParamSpec *pspec,
-+                 gpointer    class_data)
- {
-   GParamSpecUInt *uspec = G_PARAM_SPEC_UINT (pspec);
-   
-@@ -217,7 +221,8 @@ param_uint_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_long_init (GParamSpec *pspec)
-+param_long_init (GParamSpec *pspec,
-+                 gpointer    class_data)
- {
-   GParamSpecLong *lspec = G_PARAM_SPEC_LONG (pspec);
-   
-@@ -262,7 +267,8 @@ param_long_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_ulong_init (GParamSpec *pspec)
-+param_ulong_init (GParamSpec *pspec,
-+                  gpointer    class_data)
- {
-   GParamSpecULong *uspec = G_PARAM_SPEC_ULONG (pspec);
-   
-@@ -306,7 +312,8 @@ param_ulong_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_int64_init (GParamSpec *pspec)
-+param_int64_init (GParamSpec *pspec,
-+                  gpointer    class_data)
- {
-   GParamSpecInt64 *lspec = G_PARAM_SPEC_INT64 (pspec);
-   
-@@ -346,7 +353,8 @@ param_int64_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_uint64_init (GParamSpec *pspec)
-+param_uint64_init (GParamSpec *pspec,
-+                   gpointer    class_data)
- {
-   GParamSpecUInt64 *uspec = G_PARAM_SPEC_UINT64 (pspec);
-   
-@@ -386,7 +394,8 @@ param_uint64_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_unichar_init (GParamSpec *pspec)
-+param_unichar_init (GParamSpec *pspec,
-+                    gpointer    class_data)
- {
-   GParamSpecUnichar *uspec = G_PARAM_SPEC_UNICHAR (pspec);
-   
-@@ -428,7 +437,8 @@ param_unichar_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_enum_init (GParamSpec *pspec)
-+param_enum_init (GParamSpec *pspec,
-+                 gpointer    class_data)
- {
-   GParamSpecEnum *espec = G_PARAM_SPEC_ENUM (pspec);
-   
-@@ -473,7 +483,8 @@ param_enum_validate (GParamSpec *pspec,
- }
- 
- static void
--param_flags_init (GParamSpec *pspec)
-+param_flags_init (GParamSpec *pspec,
-+                  gpointer    class_data)
- {
-   GParamSpecFlags *fspec = G_PARAM_SPEC_FLAGS (pspec);
-   
-@@ -519,7 +530,8 @@ param_flags_validate (GParamSpec *pspec,
- }
- 
- static void
--param_float_init (GParamSpec *pspec)
-+param_float_init (GParamSpec *pspec,
-+                  gpointer    class_data)
- {
-   GParamSpecFloat *fspec = G_PARAM_SPEC_FLOAT (pspec);
-   
-@@ -562,7 +574,8 @@ param_float_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_double_init (GParamSpec *pspec)
-+param_double_init (GParamSpec *pspec,
-+                   gpointer    class_data)
- {
-   GParamSpecDouble *dspec = G_PARAM_SPEC_DOUBLE (pspec);
-   
-@@ -605,7 +618,8 @@ param_double_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_string_init (GParamSpec *pspec)
-+param_string_init (GParamSpec *pspec,
-+                   gpointer    class_data)
- {
-   GParamSpecString *sspec = G_PARAM_SPEC_STRING (pspec);
-   
-@@ -713,7 +727,8 @@ param_string_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_param_init (GParamSpec *pspec)
-+param_param_init (GParamSpec *pspec,
-+                  gpointer    class_data)
- {
-   /* GParamSpecParam *spec = G_PARAM_SPEC_PARAM (pspec); */
- }
-@@ -744,7 +759,8 @@ param_param_validate (GParamSpec *pspec,
- }
- 
- static void
--param_boxed_init (GParamSpec *pspec)
-+param_boxed_init (GParamSpec *pspec,
-+                  gpointer    class_data)
- {
-   /* GParamSpecBoxed *bspec = G_PARAM_SPEC_BOXED (pspec); */
- }
-@@ -782,7 +798,8 @@ param_boxed_values_cmp (GParamSpec    *pspec,
- }
- 
- static void
--param_pointer_init (GParamSpec *pspec)
-+param_pointer_init (GParamSpec *pspec,
-+                    gpointer    class_data)
- {
-   /* GParamSpecPointer *spec = G_PARAM_SPEC_POINTER (pspec); */
- }
-@@ -818,7 +835,8 @@ param_pointer_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_value_array_init (GParamSpec *pspec)
-+param_value_array_init (GParamSpec *pspec,
-+                        gpointer    class_data)
- {
-   GParamSpecValueArray *aspec = G_PARAM_SPEC_VALUE_ARRAY (pspec);
- 
-@@ -969,7 +987,8 @@ param_value_array_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_object_init (GParamSpec *pspec)
-+param_object_init (GParamSpec *pspec,
-+                   gpointer    class_data)
- {
-   /* GParamSpecObject *ospec = G_PARAM_SPEC_OBJECT (pspec); */
- }
-@@ -1013,7 +1032,8 @@ param_object_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_override_init (GParamSpec *pspec)
-+param_override_init (GParamSpec *pspec,
-+                     gpointer    class_data)
- {
-   /* GParamSpecOverride *ospec = G_PARAM_SPEC_OVERRIDE (pspec); */
- }
-@@ -1062,7 +1082,8 @@ param_override_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_gtype_init (GParamSpec *pspec)
-+param_gtype_init (GParamSpec *pspec,
-+                  gpointer    class_data)
- {
- }
- 
-@@ -1106,7 +1127,8 @@ param_gtype_values_cmp (GParamSpec   *pspec,
- }
- 
- static void
--param_variant_init (GParamSpec *pspec)
-+param_variant_init (GParamSpec *pspec,
-+                    gpointer    class_data)
- {
-   GParamSpecVariant *vspec = G_PARAM_SPEC_VARIANT (pspec);
- 
-diff --git a/gobject/gtype.h b/gobject/gtype.h
-index 1111111..2222222 100644
---- a/gobject/gtype.h
-+++ b/gobject/gtype.h
-@@ -1957,7 +1957,8 @@ guint     g_type_get_type_registration_serial (void);
-  */
- #if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_38
- #define _G_DEFINE_TYPE_EXTENDED_CLASS_INIT(TypeName, type_name) \
--static void     type_name##_class_intern_init (gpointer klass) \
-+static void     type_name##_class_intern_init (gpointer klass, \
-+                                               gpointer class_data) \
- { \
-   type_name##_parent_class = g_type_class_peek_parent (klass); \
-   if (TypeName##_private_offset != 0) \
-@@ -1967,7 +1968,8 @@ static void     type_name##_class_intern_init (gpointer klass) \
- 
- #else
- #define _G_DEFINE_TYPE_EXTENDED_CLASS_INIT(TypeName, type_name) \
--static void     type_name##_class_intern_init (gpointer klass) \
-+static void     type_name##_class_intern_init (gpointer klass, \
-+                                               gpointer class_data) \
- { \
-   type_name##_parent_class = g_type_class_peek_parent (klass); \
-   type_name##_class_init ((TypeName##Class*) klass); \
-@@ -1979,6 +1981,11 @@ static void     type_name##_class_intern_init (gpointer klass) \
- \
- static void     type_name##_init              (TypeName        *self); \
- static void     type_name##_class_init        (TypeName##Class *klass); \
-+static void     type_name##_init_adapter      (TypeName        *self, \
-+                                               gpointer         class_data) \
-+{ \
-+  type_name##_init (self); \
-+} \
- static GType    type_name##_get_type_once     (void); \
- static gpointer type_name##_parent_class = NULL; \
- static gint     TypeName##_private_offset; \
-@@ -2016,9 +2023,9 @@ type_name##_get_type_once (void) \
-         g_type_register_static_simple (TYPE_PARENT, \
-                                        g_intern_static_string (#TypeName), \
-                                        sizeof (TypeName##Class), \
--                                       (GClassInitFunc)(void (*)(void)) type_name##_class_intern_init, \
-+                                       (GClassInitFunc) type_name##_class_intern_init, \
-                                        sizeof (TypeName), \
--                                       (GInstanceInitFunc)(void (*)(void)) type_name##_init, \
-+                                       (GInstanceInitFunc) type_name##_init_adapter, \
-                                        (GTypeFlags) flags); \
-     { /* custom code follows */
- #define _G_DEFINE_TYPE_EXTENDED_END()	\
-@@ -2036,7 +2043,12 @@ type_name##_get_type_once (void) \
- 
- #define _G_DEFINE_INTERFACE_EXTENDED_BEGIN(TypeName, type_name, TYPE_PREREQ) \
- \
--static void     type_name##_default_init        (TypeName##Interface *klass); \
-+static void     type_name##_default_init         (TypeName##Interface *klass); \
-+static void     type_name##_default_init_adapter (TypeName##Interface *klass, \
-+                                                  gpointer             class_data) \
-+{ \
-+  type_name##_default_init (klass); \
-+} \
- \
- GType \
- type_name##_get_type (void) \
-@@ -2048,7 +2060,7 @@ type_name##_get_type (void) \
-         g_type_register_static_simple (G_TYPE_INTERFACE, \
-                                        g_intern_static_string (#TypeName), \
-                                        sizeof (TypeName##Interface), \
--                                       (GClassInitFunc)(void (*)(void)) type_name##_default_init, \
-+                                       (GClassInitFunc) type_name##_default_init_adapter, \
-                                        0, \
-                                        (GInstanceInitFunc)NULL, \
-                                        (GTypeFlags) 0); \
-diff --git a/gobject/gtypemodule.h b/gobject/gtypemodule.h
-index 1111111..2222222 100644
---- a/gobject/gtypemodule.h
-+++ b/gobject/gtypemodule.h
-@@ -204,12 +204,12 @@ type_name##_register_type (GTypeModule *type_module) \
-     sizeof (TypeName##Class), \
-     (GBaseInitFunc) NULL, \
-     (GBaseFinalizeFunc) NULL, \
--    (GClassInitFunc)(void (*)(void)) type_name##_class_intern_init, \
--    (GClassFinalizeFunc)(void (*)(void)) type_name##_class_finalize, \
-+    (GClassInitFunc) type_name##_class_intern_init, \
-+    (GClassFinalizeFunc) type_name##_class_finalize, \
-     NULL,   /* class_data */ \
-     sizeof (TypeName), \
-     0,      /* n_preallocs */ \
--    (GInstanceInitFunc)(void (*)(void)) type_name##_init, \
-+    (GInstanceInitFunc) type_name##_init_adapter, \
-     NULL    /* value_table */ \
-   }; \
-   type_name##_type_id = g_type_module_register_type (type_module, \
-
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Kleis Auke Wolthuizen <github@kleisauke.nl>
 Date: Tue, 13 Apr 2021 15:30:00 +0200
-Subject: [PATCH 8/11] Use vsnpintf/snprintf/printf from musl libc
+Subject: [PATCH 7/11] Use vsnpintf/snprintf/printf from musl libc
 
 The C99 semantics of these functions is well supported in musl libc.
 
@@ -657,7 +277,7 @@ diff --git a/meson.build b/meson.build
 index 1111111..2222222 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -944,9 +944,9 @@ if host_system == 'windows' and (cc.get_id() == 'msvc' or cc.get_id() == 'clang-
+@@ -949,9 +949,9 @@ if host_system == 'windows' and (cc.get_id() == 'msvc' or cc.get_id() == 'clang-
    glib_conf.set('HAVE_C99_SNPRINTF', false)
    glib_conf.set('HAVE_C99_VSNPRINTF', false)
    glib_conf.set('HAVE_UNIX98_PRINTF', false)
@@ -674,7 +294,7 @@ index 1111111..2222222 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Kleis Auke Wolthuizen <github@kleisauke.nl>
 Date: Fri, 15 Nov 2019 11:00:00 +0100
-Subject: [PATCH 9/11] Implement g_get_num_processors for Emscripten
+Subject: [PATCH 8/11] Implement g_get_num_processors for Emscripten
 
 Upstream-Status: Pending
 
@@ -693,7 +313,7 @@ index 1111111..2222222 100644
  #include "gslice.h"
  #include "gstrfuncs.h"
  #include "gtestutils.h"
-@@ -1065,7 +1069,9 @@ g_thread_self (void)
+@@ -1066,7 +1070,9 @@ g_thread_self (void)
  guint
  g_get_num_processors (void)
  {
@@ -708,7 +328,7 @@ index 1111111..2222222 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Kleis Auke Wolthuizen <github@kleisauke.nl>
 Date: Tue, 25 May 2021 11:00:00 +0200
-Subject: [PATCH 10/11] Disable GModule implementation on Emscripten
+Subject: [PATCH 9/11] Disable GModule implementation on Emscripten
 
 Upstream-Status: Pending
 
@@ -729,7 +349,7 @@ index 1111111..2222222 100644
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Kleis Auke Wolthuizen <github@kleisauke.nl>
 Date: Tue, 8 Oct 2019 11:30:00 +0200
-Subject: [PATCH 11/11] Do not build executables
+Subject: [PATCH 10/11] Do not build executables
 
 We're only interested in the libraries.
 
@@ -740,7 +360,7 @@ diff --git a/gio/meson.build b/gio/meson.build
 index 1111111..2222222 100644
 --- a/gio/meson.build
 +++ b/gio/meson.build
-@@ -911,101 +911,6 @@ gconstructor_as_data_h = custom_target('gconstructor_as_data.h',
+@@ -915,101 +915,6 @@ gconstructor_as_data_h = custom_target('gconstructor_as_data.h',
      output : ['gconstructor_as_data.h'],
      command : [python, '@INPUT0@', '@INPUT1@', 'gconstructor_code', '@OUTPUT@'])
  
@@ -846,7 +466,7 @@ diff --git a/glib/meson.build b/glib/meson.build
 index 1111111..2222222 100644
 --- a/glib/meson.build
 +++ b/glib/meson.build
-@@ -417,7 +417,7 @@ if host_system == 'windows'
+@@ -415,7 +415,7 @@ if host_system == 'windows'
        include_directories : configinc,
        dependencies : [libglib_dep])
    endif
@@ -874,7 +494,7 @@ diff --git a/meson.build b/meson.build
 index 1111111..2222222 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -2330,7 +2330,6 @@ subdir('gobject')
+@@ -2340,7 +2340,6 @@ subdir('gobject')
  subdir('gthread')
  subdir('gmodule')
  subdir('gio')
