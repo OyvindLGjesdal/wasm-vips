@@ -6,14 +6,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        command: [node, web]
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
     - name: compile wasm-wips for node and web
-      run: npm run build:${{ matrix.command }}
+      run: npm run build
     
 #todo create cache
 
